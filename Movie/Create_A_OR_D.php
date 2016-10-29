@@ -24,9 +24,9 @@
 	    	</div>
 	    	<div>
 				<label for="dob">Date of Birth:</label>
-				<input type="text" id="dob" placeholder="mm-dd-yy" name="dob"><br>
+				<input type="text" id="dob" placeholder="yyyy-mm-dd" name="dob"><br>
 				<label for="dod">Date of Death:</label>
-				<input type="text" id="dod" placeholder="mm-dd-yy"name="dod">(leave blank if still alive)
+				<input type="text" id="dod" placeholder="yyyy-mm-dd"name="dod">(leave blank if still alive)
 			</div>
 		</fieldset>
 		<button type="submit" class="btn btn-default">Submit</button>
