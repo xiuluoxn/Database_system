@@ -15,7 +15,10 @@
 	    <div class="navbar-header">
 	      <a class="navbar-brand" href="index.php">Movie Database System</a>
 	    </div>
-
+        <form class="navbar-form navbar-right" method = "GET" action="Search_Actor_Movie.php?<?php echo htmlspecialchars($_GET['search']) ?>">
+            <input type="text" class="form-control" placeholder="Search..." name="name">
+            <button type="submit">Search</button>
+        </form>
 	  </div><!-- /.container-fluid -->
 	</nav>
 
@@ -32,7 +35,7 @@
         	<form method = "GET" action="#">
         		<div>
         			<label for="name">Search:</label><br>
-        			<input type="text" id="name" placeholder="Part of the name" name="name"><br>
+        			<input type="text" id="name" placeholder="Search.." name="name"><br>
         		</div>
         		<p></p>
         		<button type="submit" class="btn btn-primary">Search</button>
@@ -45,7 +48,7 @@
     				die('Unable to connect to database [' . $db->connect_error . ']');
     			}
     			if (!empty($_GET['name'])) {
-    				$input = explode(" ", $_GET['name']);
+    				$input = explode(" ", htmlspecialchars($_GET['name']));
                     $len = sizeof($input);
     			}
     			else {
@@ -56,7 +59,8 @@
     				//SELECT Actor/Actress
                     $query = "SELECT id, CONCAT(first,' ',last) Name, dob FROM Actor WHERE UPPER(CONCAT(first,' ',last)) LIKE UPPER('%$input[0]%')";
                     for ($i = 1; $i < $len; $i++) { 
-                        $query .= " AND UPPER(CONCAT(first,' ',last)) LIKE UPPER('%$input[$i]%')";
+                        $subName = htmlspecialchars($input[$i]);
+                        $query .= " AND UPPER(CONCAT(first,' ',last)) LIKE UPPER('%$subName%')";
                     }
                     $query .= ";";
     				$result = $db->query($query);
@@ -117,10 +121,7 @@
     					<?php endif ?>
     				</div>
     				<?php 
-    				$result->free();
-    				$db->close();
     			}
-
     		?>
 	      </div>
 	    </div><!--/.col-xs-12.col-sm-9-->
@@ -144,6 +145,11 @@
 	  </footer>
 
 	</div><!--/.container-->
+    <?php 
+        // free the source
+        $result->free();
+        $db->close();
+    ?>
 </body>
 </html>
 

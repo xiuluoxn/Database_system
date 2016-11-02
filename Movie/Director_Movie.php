@@ -7,6 +7,9 @@
 	<title>Director to Movie</title>
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/offcanvas.css" rel="stylesheet">
+	<style>
+		.error {color: #FF0000;}
+	</style>
 </head>
 <body>
 	<nav class="navbar navbar-default">
@@ -15,7 +18,10 @@
 	    <div class="navbar-header">
 	      <a class="navbar-brand" href="index.php">Movie Database System</a>
 	    </div>
-
+		<form class="navbar-form navbar-right" method = "GET" action="Search_Actor_Movie.php?<?php echo htmlspecialchars($_GET['search']) ?>">
+            <input type="text" class="form-control" placeholder="Search..." name="name">
+            <button type="submit">Search</button>
+		</form>
 	  </div><!-- /.container-fluid -->
 	</nav>
 
@@ -29,9 +35,10 @@
 	      </p>
 	      <div class="jumbotron">
 	        	<h2>Assign Diretor to The Movie</h2>
+	        	<h5><span class="error">* required field.</span></h5>
 				<form method="GET" action="#">
 					<div>
-						<label for="movie_list">Movie Title: </label><br>
+						<span class="error">*</span><label for="movie_list">Movie Title: </label><br>
 						<select name="movie" class="selectpicker" id="movie_list" style="max-width:90%;">
 						<option value="" disabled selected style="display: none;">Please Choose The Movie Title</option>
 							<?php 
@@ -54,7 +61,7 @@
 						</select>
 					</div>
 					<div>
-						<label for="director_list">Director Name:</label><br>
+						<span class="error">*</span><label for="director_list">Director Name:</label><br>
 						<select name="director" id="director_list">
 						<option value="" disabled selected style="display: none;">Please Choose The Actor/Actress</option>
 							<?php 
@@ -72,32 +79,42 @@
 						</select>
 					</div>
 					<p></p>
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<button type="submit" name="submit" class="btn btn-primary">Submit</button>
 				</form>
 				<!-- update the database -->
 				<?php 
+					$midErr = $didErr = "";
 					// check the value
 					if (!empty($_GET['movie'])) {
-						$mid = $_GET['movie'];
+						$mid = htmlspecialchars($_GET['movie']);
 					}
 					else {
 						$err = true;
+						$midErr = "Movie must be selected";
 					}
 					if (!empty($_GET['director'])) {
-						$did = $_GET['director'];
+						$did = htmlspecialchars($_GET['director']);
 					}
 					else {
 						$err = true;
+						$didErr = "Director must be selected";
 					}
 					// update to database
-					if (!$err) {
-						$query = "INSERT INTO MovieDirector VALUES ('$mid', '$did')";
-						$result = $db->query($query);
-						echo "Successfully Updated!";
+					if (isset($_GET['submit'])) {
+						if (!$err) {
+							$query = "INSERT INTO MovieDirector VALUES ('$mid', '$did')";
+							$result = $db->query($query);
+							echo "<h4 style=\"color: red\">Successfully Assigned Director!</h4>";
+						}
+						else {
+							if (!empty($midErr)) {
+			        			echo "<h4 style=\"color: red\">Error! $midErr!</h4>";
+			        		}
+			        		if (!empty($didErr)) {
+			        			echo "<h4 style=\"color: red\">Error! $didErr!</h4>";
+			        		}
+						}
 					}
-					// free the source
-					$result->free();
-					$db->close();
 				 ?>
 	      </div>
 	    </div><!--/.col-xs-12.col-sm-9-->
@@ -121,5 +138,10 @@
 	  </footer>
 
 	</div><!--/.container-->
+	<?php 
+		// free the source
+		$result->free();
+		$db->close();
+	?>
 </body>
 </html>

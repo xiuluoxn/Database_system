@@ -7,6 +7,9 @@
 	<title>Create Movie</title>
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/offcanvas.css" rel="stylesheet">
+	<style>
+    	.error {color: #FF0000;}
+    </style>
 </head>
 <body>
 	<nav class="navbar navbar-default">
@@ -15,7 +18,10 @@
 	    <div class="navbar-header">
 	      <a class="navbar-brand" href="index.php">Movie Database System</a>
 	    </div>
-
+		<form class="navbar-form navbar-right" method = "GET" action="Search_Actor_Movie.php?<?php echo htmlspecialchars($_GET['search']) ?>">
+            <input type="text" class="form-control" placeholder="Search..." name="name">
+            <button type="submit">Search</button>
+		</form>
 	  </div><!-- /.container-fluid -->
 	</nav>
 
@@ -29,22 +35,23 @@
 	      </p>
 	      <div class="jumbotron">
 	        <h2>Add a Movie</h2>
+	        <h5><span class="error">* required field.</span></h5>
 	        	<form method = "GET" action="#">
 	        		<fieldset>
 	        			<legend>Movie Info:</legend>
 	        			
 	        			<div>
-	        				<label for="title">Movie title:</label><br>
+	        				<span class="error">*</span><label for="title">Movie title:</label><br>
 	        				<input type="text" id="title" placeholder="title" name="title"><br>
-	        				<label for="year">Year made:</label><br>
+	        				<span class="error">*</span><label for="year">Year made:</label><br>
 	        				<input type="text" id="year" placeholder="year" name="year">
 	        			</div>
 	        			<div>
-	        				<label for="company">Company:</label><br>
+	        				<span class="error">*</span><label for="company">Company:</label><br>
 	        				<input type="text" id="company" placeholder="company" name="company">
 	        			</div>
 	        			<div>
-	        				<label>MPAA Rating:  </label>
+	        				<span class="error">*</span><label>MPAA Rating:  </label>
 	        				<input type="radio" name="rating" value="G">G
 	        				<input type="radio" name="rating" value="PG">PG
 	        	    		<input type="radio" name="rating" value="PG-13">PG-13
@@ -52,7 +59,7 @@
 	        	    		<input type="radio" name="rating" value="NC-17">NC-17
 	        	    	</div>
 	        			<div>
-	        				<label for="genre">Genre:</label><br>
+	        				<span class="error">*</span><label for="genre">Genre:</label><br>
 	        				<input type="checkbox" id="genre" placeholder="genre" name="genre[]" value="Action">Action
 	        				<input type="checkbox" id="genre" placeholder="genre" name="genre[]" value="Adult">Adult
 	        				<input type="checkbox" id="genre" placeholder="genre" name="genre[]" value="Adventure">Adventure
@@ -74,11 +81,12 @@
 	        			</div>
 	        		</fieldset>
 	        		<p></p>
-	        		<button type="submit" class="btn btn-primary">Submit</button>
+	        		<button type="submit" name="submit" class="btn btn-primary">Submit</button>
 	            </form>
 	            
 
 	            <?php 
+	            	$titleErr = $yearErr = $ratingErr = $companyErr = $genreErr ="";
 	        		// Create connection
 	        		$db = new mysqli('localhost', 'cs143', '', 'CS143');
 	        		// Check connection
@@ -90,78 +98,79 @@
 	        			$title = htmlspecialchars($_GET['title']);
 	        		}
 	        		else {
-	        			$error = true;
-	        			//$error_msg = "title can not be empty \n";
+	        			$err = true;
+	        			$titleErr = "Title can not be empty";
 	        		}
 
 	        		if(!empty($_GET['year'])) {
 	        			$year = htmlspecialchars($_GET['year']);
 	        		}
 	        		else {
-	        			$error = true;
-	        			//$error_msg = "year can not be empty \n";
+	        			$err = true;
+	        			$yearErr = "Year can not be empty";
 	        		}
 
 	        		if(!empty($_GET['rating'])) {
-	        			$rating = $_GET['rating'];
+	        			$rating = htmlspecialchars($_GET['rating']);
 	        		}
 	        		else {
-	        			$error = true;
-	        			//$error_msg = "rating can not be empty \n";
+	        			$err = true;
+	        			$ratingErr = "Rating must be selected";
 	        		}
 
 	        		if(!empty($_GET['company'])) {
 	        			$company = htmlspecialchars($_GET['company']);
 	        		}
 	        		else {
-	        			$error = true;
-	        			////$error_msg = "company can not be empty \n";
+	        			$err = true;
+	        			$companyErr = "Company can not be empty";
 	        		}
 
 	        		if(!empty($_GET['genre'])) {
-	        			$genre = $_GET['genre'];
+	        			$genre = htmlspecialchars($_GET['genre']);
 	        		}
 	        		else {
-	        			$error = true;
-	        			////$error_msg = "title can not be empty \n";
+	        			$err = true;
+	        			$genreErr = "Genre must be selected";
 	        		}
 
-	        		if(!$error) {
-	        			//fetch and set valid id
-	        			$query = "SELECT id FROM MaxMovieID;";
-	        			$result = $db->query($query);
-	        			$id = mysqli_fetch_assoc($result)['id'] + 1;
-	        			$query = "INSERT INTO Movie VALUES ('$id', '$title', '$year', '$rating', '$company');";
-	        			echo "$query";
-	        			$result = $db->query($query);
-	        			foreach ($genre as $value) {
-	        			 	$query = "INSERT INTO MovieGenre VALUES ('$id','$value');";
-	        			 	$result = $db->query($query);
-	        			}
-	        			if ($result === TRUE) {
-	        			 	$query = "UPDATE MaxMovieID SET id = '$id';";
-	        			 	$result = $db->query($query);
-	        			 	?>
-	        			 		<h3>Create Successfully!<h3>
-	        				 	<p>
-	        					 	The movie added:
-	        					 	<ul>
-	        						 	<li>Title: <?php echo "$title" ?></li>
-	        						 	<li>Year: <?php echo "$year" ?></li>
-	        						 	<li>Rating: <?php echo "$rating" ?></li>
-	        						 	<li>Company: <?php echo "$company" ?></li>
-	        						 	<li>Genre: <?php 
-	        						 					foreach ($genre as $value) {
-	        						 						echo "$value | ";
-	        						 					} 
-	        						 				?>
-	        						 	</li>
-	        					 	</ul>
-	        				 	</p>
-	        			 	<?php 
-	        			}
-	        			$result->free();
-	        			$db->close();
+	        		if (isset($_GET['submit'])) {
+		        		if(!$err) {
+		        			//fetch and set valid id
+		        			$query = "SELECT id FROM MaxMovieID;";
+		        			$result = $db->query($query);
+		        			$id = mysqli_fetch_assoc($result)['id'] + 1;
+		        			$query = "INSERT INTO Movie VALUES ('$id', '$title', '$year', '$rating', '$company');";
+		        			$result = $db->query($query);
+		        			foreach ($genre as $value) {
+		        			 	$query = "INSERT INTO MovieGenre VALUES ('$id','$value');";
+		        			 	$result = $db->query($query);
+		        			}
+		        			if ($result === TRUE) {
+		        			 	$query = "UPDATE MaxMovieID SET id = '$id';";
+		        			 	$result = $db->query($query);
+		        			 	?>
+		        			 		<h4 style="color: red">Create Movie Record Successfully!<h4>
+		        			 	<?php 
+		        			}
+		        		}
+		        		else {
+		        			if (!empty($titleErr)) {
+			        			echo "<h4 style=\"color: red\">Error! $titleErr!</h4>";
+			        		}
+			        		if (!empty($yearErr)) {
+			        			echo "<h4 style=\"color: red\">Error! $yearErr!</h4>";
+			        		}
+			        		if (!empty($ratingErr)) {
+			        			echo "<h4 style=\"color: red\">Error! $ratingErr!</h4>";
+			        		}
+			        		if (!empty($companyErr)) {
+			        			echo "<h4 style=\"color: red\">Error! $companyErr!</h4>";
+			        		}
+			        		if (!empty($genreErr)) {
+			        			echo "<h4 style=\"color: red\">Error! $genreErr!</h4>";
+			        		}
+		        		}
 	        		}
 	        	?>
 	      </div>
@@ -186,5 +195,10 @@
 	  </footer>
 
 	</div><!--/.container-->
+	<?php 
+		// free the source
+		$result->free();
+		$db->close();
+	?>
 </body>
 </html>

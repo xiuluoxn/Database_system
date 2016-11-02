@@ -16,7 +16,10 @@
 	    <div class="navbar-header">
 	      <a class="navbar-brand" href="index.php">Movie Database System</a>
 	    </div>
-
+		<form class="navbar-form navbar-right" method = "GET" action="Search_Actor_Movie.php?<?php echo htmlspecialchars($_GET['search']) ?>">
+            <input type="text" class="form-control" placeholder="Search..." name="name">
+            <button type="submit">Search</button>
+		</form>
 	  </div><!-- /.container-fluid -->
 	</nav>
 
@@ -90,29 +93,28 @@
 		    <?php
 		    //catch value from get 
 		    if (!empty($_GET['name'])) {
-		    	$name = $_GET['name'];
+		    	$name = htmlspecialchars($_GET['name']);
 		    }
 		    else {
 		    	$err = true;
 		    }
 
-		    $time = date("Y:m:d H:i:s");
-
 		    if (!empty($_GET['rating'])) {
-		    	$rating = $_GET['rating'];
+		    	$rating = htmlspecialchars($_GET['rating']);
 		    }
 		    else {
 		    	$err = true;
 		    }
 
 		    if (!empty($_GET['comment'])) {
-		    	$comment = $_GET['comment'];
+		    	$comment = htmlspecialchars($_GET['comment']);
 		    }
 		    else {
 		    	$err = true;
 		    }
 		    //insert tuples to Review table
 		    if (!$err) {
+		    	$time = date("Y:m:d H:i:s");
 			    $query = "INSERT INTO Review VALUES('$name','$time','$id','$rating','$comment')";
 				$result = $db->query($query);
 				if ($result === true) {
@@ -121,8 +123,6 @@
 				} 
 			}
 		}
-		$result->free();	
-		$db->close();
 	?>
 	      </div>
 	    </div><!--/.col-xs-12.col-sm-9-->
@@ -146,6 +146,12 @@
 	  </footer>
 
 	</div><!--/.container-->
+
+	<?php 
+		// free the source
+		$result->free();
+		$db->close();
+	?>
 </body>
 </html>
 

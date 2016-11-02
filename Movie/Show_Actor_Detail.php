@@ -15,7 +15,10 @@
 	    <div class="navbar-header">
 	      <a class="navbar-brand" href="index.php">Movie Database System</a>
 	    </div>
-
+		<form class="navbar-form navbar-right" method = "GET" action="Search_Actor_Movie.php?<?php echo htmlspecialchars($_GET['search']) ?>">
+            <input type="text" class="form-control" placeholder="Search..." name="name">
+            <button type="submit">Search</button>
+		</form>
 	  </div><!-- /.container-fluid -->
 	</nav>
 
@@ -135,6 +138,11 @@
 	  </footer>
 
 	</div><!--/.container-->
+	<?php 
+		// free the source
+		$result->free();
+		$db->close();
+	?>
 
 </body>
 </html>
